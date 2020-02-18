@@ -7,6 +7,8 @@
 </head>
 <body>
     <div id="app">
+        <input type="button" value="Add Section" onclick="addSectionInitialInput()">
+        <input type="button" value="Add Section Content" id="contentButton" onclick="addSectionContentInput()">
         <form id = "input">
             <label>Title:</label>
             <input type="text">
@@ -16,6 +18,9 @@
         <input type="button" value="Generate" onclick="generateHTML()">
         <p>Check the console window for results!</p>
     </div>
+
+
+
     <style>
         #app > input{
             width: 200px;
@@ -24,6 +29,9 @@
         #input{
             display: grid;
             grid-template-columns: 1fr 4fr; 
+        }
+        #contentButton{
+            visibility: hidden;
         }
         label{
             justify-self: end;
@@ -34,19 +42,60 @@
             justify-self: start;
         }
     </style>
+
+
+
     <script>
         var html = "";
-        var nodes = document.getElementById("input").childNodes;
-        function generateHTML(){
-            console.log(nodes);
+        var allnodes = document.getElementById("input").childNodes;
+        var inputnodes = [];
+        
+        function addSectionInitialInput(){
+            document.getElementById("contentButton").style.visibility = "visible";
 
+            var labelTitle = document.createElement("LABEL"), labelAuthor = document.createElement("LABEL");
+            var labelTitleText = document.createTextNode("Section Title:"), labelAuthorText = document.createTextNode("Section Author:");
+            var inputTitle = document.createElement("INPUT"), inputAuthor = document.createElement("INPUT");
+
+            labelTitle.appendChild(labelTitleText);
+            inputTitle.setAttribute("type", "text");
+            inputTitle.setAttribute("class","sectiontitle");
+            labelAuthor.appendChild(labelAuthorText);
+            inputAuthor.setAttribute("type", "text");
+            inputAuthor.setAttribute("class","sectionauthor");
+
+            document.getElementById("input").appendChild(labelTitle);
+            document.getElementById("input").appendChild(inputTitle);
+            document.getElementById("input").appendChild(labelAuthor);
+            document.getElementById("input").appendChild(inputAuthor);
+            addSectionContentInput();
+        }
+        function addSectionContentInput(){
+            var labelContent = document.createElement("LABEL");
+            var labelContentText = document.createTextNode("Section Content:");
+            var inputContent = document.createElement("INPUT");
+
+            labelContent.appendChild(labelContentText);
+            inputContent.setAttribute("type", "text");
+            inputContent.setAttribute("class","sectioncontent");
+
+            document.getElementById("input").appendChild(labelContent);
+            document.getElementById("input").appendChild(inputContent);
+        }
+        function generateHTML(){
+            for(var i = 0; i < allnodes.length; i++){
+                if(allnodes[i].nodeName === "INPUT"){
+                    inputnodes.push(allnodes[i]);
+                }
+            }
+            inputnodes.splice[-1];
             html = `
             <!DOCTYPE html>
             <html lang="en">
             <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>`+nodes[3].value+`</title>
+                <title>`+inputnodes[0].value+`</title>
                 <link rel="stylesheet" href="styles.css">
             </head>
             <body>
@@ -60,8 +109,29 @@
                 </div>
                 <div class="article">
                     <div class="article-header">
-                        <h1 id="title">`+nodes[3].value+`</h1>
-                        <h7 id="info">➤ Power Outlet `+nodes[7].value+`<br>➤ `+new Date().toDateString()+`<h7>
+                        <h1 id="title">`+inputnodes[0].value+`</h1>.substr(3,20)
+                        <h7 id="info">➤ Power Outlet `+inputnodes[1].value+`<br>➤ `+new Date().toDateString().substr(4,14)+`<h7>`
+            inputnodes.splice(0,2);
+            for(var i = 0; i < inputnodes.length; i++){
+                if(inputnodes[i].className === "sectiontitle"){
+                    html +=`
+                    </div>
+                    <div class="section">
+                        <h2 class="section-title">`+inputnodes[i].value+`</h2>`;
+                }
+                else if(inputnodes[i].className === "sectionauthor"){
+                    html += `
+                        <h3 class="section-author">`+inputnodes[i].value+`</h3>`;
+                }
+                else if(inputnodes[i].className === "sectioncontent"){
+                    html += `
+                        <p>`+inputnodes[i].value+`</p>`;
+                }
+                else{
+                    console.log("Unidentified input with class"+inputnodes[i].className);
+                }
+            }
+            html += `
                     </div>
                     <div class="article-footer">
                         <p>
@@ -71,14 +141,7 @@
                 </div>
             </body>
             </html>`
-            /*
-            for(var i = 0; i < nodes.length; i++){
-                if(nodes[i].nodeName === "INPUT"){
-                    html += nodes[i].value;
-                }
-            }
-            document.getElementById("output").innerHTML = generatedhtml;
-            */
+
             console.log(html);
         }
     </script>
