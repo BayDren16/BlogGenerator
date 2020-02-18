@@ -10,6 +10,7 @@
         <input type="button" value="Add Section" onclick="addSection()">
         <input type="button" value="Add Text" class="contentButton" onclick="addSectionText()">
         <input type="button" value="Add Image" class="contentButton" onclick="addSectionImage()">
+        <input type="button" value="Remove Last Section" class="contentButton" onclick="removeLastSection()">
         <p>Link Markdown: [example](https://google.com)</p><br>
         <form id = "input">
             <label>Title:</label>
@@ -78,6 +79,10 @@
         function addSectionImage(){
             addSectionContentInput("Image Link: ","sectionimage");
             addSectionContentInput("Image Alt Text: ","sectionimagealt");
+        }
+        function removeLastSection(){
+            document.getElementById("input").removeChild(document.getElementById("input").lastChild);
+            document.getElementById("input").removeChild(document.getElementById("input").lastChild);
         }
 
         function markdownString(queryString){
