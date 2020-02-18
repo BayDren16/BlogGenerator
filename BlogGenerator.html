@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog HTML Generator</title>
+</head>
+<body>
+    <div id="app">
+        <form id = "input">
+            <label>Title:</label>
+            <input type="text">
+            <label>Outlet Number:</label>
+            <input type="text">
+        </form>
+        <input type="button" value="Generate" onclick="generateHTML()">
+        <p>Check the console window for results!</p>
+    </div>
+    <style>
+        #app > input{
+            width: 200px;
+            margin: 2em 1em;
+        }
+        #input{
+            display: grid;
+            grid-template-columns: 1fr 4fr; 
+        }
+        label{
+            justify-self: end;
+        }
+        input, p{
+            width: 50vw;
+            margin: 0.5em;
+            justify-self: start;
+        }
+    </style>
+    <script>
+        var html = "";
+        var nodes = document.getElementById("input").childNodes;
+        function generateHTML(){
+            console.log(nodes);
+
+            html = `
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>`+nodes[3].value+`</title>
+                <link rel="stylesheet" href="styles.css">
+            </head>
+            <body>
+                <div class="menubar">
+                    <p>Power Crisis</p>
+                    <ul>
+                        <li><a href="#">Home</a></li>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">About</a></li>
+                    </ul>
+                </div>
+                <div class="article">
+                    <div class="article-header">
+                        <h1 id="title">`+nodes[3].value+`</h1>
+                        <h7 id="info">➤ Power Outlet `+nodes[7].value+`<br>➤ `+new Date().toDateString()+`<h7>
+                    </div>
+                    <div class="article-footer">
+                        <p>
+                            Be sure to <a href="https://twitter.com/PowerCrisis_RBX">follow our Twitter</a> and <a href="https://discord.gg/VyXEhaQ">join our Discord server</a> to stay up-to-date with the game’s development, announcements, and events!
+                        </p>
+                    </div>
+                </div>
+            </body>
+            </html>`
+            /*
+            for(var i = 0; i < nodes.length; i++){
+                if(nodes[i].nodeName === "INPUT"){
+                    html += nodes[i].value;
+                }
+            }
+            document.getElementById("output").innerHTML = generatedhtml;
+            */
+            console.log(html);
+        }
+    </script>
+</body>
+</html>
