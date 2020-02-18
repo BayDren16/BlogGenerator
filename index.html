@@ -7,8 +7,10 @@
 </head>
 <body>
     <div id="app">
-        <input type="button" value="Add Section" onclick="addSectionInitialInput()">
-        <input type="button" value="Add Section Content" id="contentButton" onclick="addSectionContentInput()">
+        <input type="button" value="Add Section" onclick="addSection()">
+        <input type="button" value="Add Text" class="contentButton" onclick="addSectionText()">
+        <input type="button" value="Add Image" class="contentButton" onclick="addSectionImage()">
+        <p>Link Markdown: [example](https://google.com)</p><br>
         <form id = "input">
             <label>Title:</label>
             <input type="text">
@@ -30,7 +32,7 @@
             display: grid;
             grid-template-columns: 1fr 4fr; 
         }
-        #contentButton{
+        .contentButton{
             visibility: hidden;
         }
         label{
@@ -50,37 +52,50 @@
         var allnodes = document.getElementById("input").childNodes;
         var inputnodes = [];
         
-        function addSectionInitialInput(){
-            document.getElementById("contentButton").style.visibility = "visible";
-
-            var labelTitle = document.createElement("LABEL"), labelAuthor = document.createElement("LABEL");
-            var labelTitleText = document.createTextNode("Section Title:"), labelAuthorText = document.createTextNode("Section Author:");
-            var inputTitle = document.createElement("INPUT"), inputAuthor = document.createElement("INPUT");
-
-            labelTitle.appendChild(labelTitleText);
-            inputTitle.setAttribute("type", "text");
-            inputTitle.setAttribute("class","sectiontitle");
-            labelAuthor.appendChild(labelAuthorText);
-            inputAuthor.setAttribute("type", "text");
-            inputAuthor.setAttribute("class","sectionauthor");
-
-            document.getElementById("input").appendChild(labelTitle);
-            document.getElementById("input").appendChild(inputTitle);
-            document.getElementById("input").appendChild(labelAuthor);
-            document.getElementById("input").appendChild(inputAuthor);
-            addSectionContentInput();
-        }
-        function addSectionContentInput(){
+        function addSectionContentInput(prompt, classname){
             var labelContent = document.createElement("LABEL");
-            var labelContentText = document.createTextNode("Section Content:");
+            var labelContentText = document.createTextNode(prompt);
             var inputContent = document.createElement("INPUT");
 
             labelContent.appendChild(labelContentText);
             inputContent.setAttribute("type", "text");
-            inputContent.setAttribute("class","sectioncontent");
+            inputContent.setAttribute("class", classname);
 
             document.getElementById("input").appendChild(labelContent);
             document.getElementById("input").appendChild(inputContent);
+        }
+        function addSection(){
+            for(var i = 0; i < document.getElementsByClassName("contentButton").length; i++){
+                document.getElementsByClassName("contentButton")[i].style.visibility = "visible";
+            }
+
+            addSectionContentInput("Section Title: ", "sectiontitle");
+            addSectionContentInput("Section Author: ", "sectionauthor");
+        }
+        function addSectionText(){
+            addSectionContentInput("Text: ", "sectiontext");
+        }
+        function addSectionImage(){
+            addSectionContentInput("Image Link: ","sectionimage");
+            addSectionContentInput("Image Alt Text: ","sectionimagealt");
+        }
+
+        function markdownString(queryString){
+            var formattedString = ""
+            for(var i = 0; i < queryString.length; i++){
+                if(queryString.charAt(i) === "["){
+                    // Link format: [example](https://google.com)
+                    var linkString = queryString.substring(i);
+
+                    var endText = linkString.indexOf("]"), endAddress = linkString.indexOf(")"); 
+                    var linkText = linkString.substring(1, endText), linkAddress = linkString.substring(endText + 2, endAddress);
+
+                    formattedString += `<a href="`+linkAddress+`">`+linkText+`</a>`;
+                    i += (linkText.length + linkAddress.length + 4);
+                }
+                formattedString += queryString.charAt(i);
+            }
+            return formattedString;
         }
         function generateHTML(){
             for(var i = 0; i < allnodes.length; i++){
@@ -88,7 +103,9 @@
                     inputnodes.push(allnodes[i]);
                 }
             }
-            inputnodes.splice[-1];
+
+            inputnodes.splice[-1]; // Removing "Generate" button from array of input nodes
+
             html = `
             <!DOCTYPE html>
             <html lang="en">
@@ -111,7 +128,9 @@
                     <div class="article-header">
                         <h1 id="title">`+inputnodes[0].value+`</h1>.substr(3,20)
                         <h7 id="info">➤ Power Outlet `+inputnodes[1].value+`<br>➤ `+new Date().toDateString().substr(4,14)+`<h7>`
-            inputnodes.splice(0,2);
+            
+            inputnodes.splice(0,2); // Removing article title and article author from array of input nodes
+
             for(var i = 0; i < inputnodes.length; i++){
                 if(inputnodes[i].className === "sectiontitle"){
                     html +=`
@@ -120,17 +139,20 @@
                         <h2 class="section-title">`+inputnodes[i].value+`</h2>`;
                 }
                 else if(inputnodes[i].className === "sectionauthor"){
-                    html += `
-                        <h3 class="section-author">`+inputnodes[i].value+`</h3>`;
+                    html += `\n\t\t\t\t\t\t<h3 class="section-author">`+inputnodes[i].value+`</h3>`;
                 }
-                else if(inputnodes[i].className === "sectioncontent"){
-                    html += `
-                        <p>`+inputnodes[i].value+`</p>`;
+                else if(inputnodes[i].className === "sectiontext"){
+                    html += `\n\t\t\t\t\t\t<p>`+markdownString(inputnodes[i].value)+`</p>`;
+                }
+                else if(inputnodes[i].className === "sectionimage"){
+                    html += `\n\t\t\t\t\t\t<img src="`+inputnodes[i].value+`" alt="`+inputnodes[i+1].value+`">`;
+                    i++;
                 }
                 else{
-                    console.log("Unidentified input with class"+inputnodes[i].className);
+                    console.log("Unidentified input with classname "+inputnodes[i].className);
                 }
             }
+
             html += `
                     </div>
                     <div class="article-footer">
