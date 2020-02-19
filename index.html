@@ -11,7 +11,7 @@
         <input type="button" value="Add Text" class="contentButton" onclick="addSectionText()">
         <input type="button" value="Add Image" class="contentButton" onclick="addSectionImage()">
         <input type="button" value="Remove Last Section" class="contentButton" onclick="removeLastSection()">
-        <p>Link Markdown: [example](https://google.com)</p><br>
+        <p>Link Markdown: [example](https://google.com)</p>
         <form id = "input">
             <label>Title:</label>
             <input type="text">
@@ -74,15 +74,38 @@
             addSectionContentInput("Section Author: ", "sectionauthor");
         }
         function addSectionText(){
-            addSectionContentInput("Text: ", "sectiontext");
+            if(document.getElementById("input").lastChild.className !== undefined){
+                addSectionContentInput("Text: ", "sectiontext");
+            }
         }
         function addSectionImage(){
-            addSectionContentInput("Image Link: ","sectionimage");
-            addSectionContentInput("Image Alt Text: ","sectionimagealt");
+            if(document.getElementById("input").lastChild.className !== undefined){
+                addSectionContentInput("Image Link: ","sectionimage");
+                addSectionContentInput("Image Alt Text: ","sectionimagealt");
+            }
         }
         function removeLastSection(){
-            document.getElementById("input").removeChild(document.getElementById("input").lastChild);
-            document.getElementById("input").removeChild(document.getElementById("input").lastChild);
+            var amt = 2;
+            if(document.getElementById("input").lastChild.className === "sectionimagealt" || document.getElementById("input").lastChild.className === "sectionauthor"){
+                amt = 4;
+            } else if(document.getElementById("input").lastChild.className === undefined){
+                amt = 0;
+            }
+            for(var i = 0; i < amt; i++){
+                document.getElementById("input").removeChild(document.getElementById("input").lastChild);
+            }
+            /*
+            if(document.getElementById("input").lastChild.id !== "outletnumber"){
+                for(var i = 0; i < 2; i++){
+                    document.getElementById("input").removeChild(document.getElementById("input").lastChild);
+                }
+                if(document.getElementById("input").lastChild.className === "sectionimagealt"){
+                    for(var i = 0; i < 2; i++){
+                        document.getElementById("input").removeChild(document.getElementById("input").lastChild);
+                    }
+                }
+            }
+            */
         }
 
         function markdownString(queryString){
